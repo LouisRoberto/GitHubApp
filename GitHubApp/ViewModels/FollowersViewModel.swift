@@ -15,17 +15,21 @@ class FollowersViewModel: ObservableObject {
     @Published var error: NetworkError?
     
     private var cancellables = Set<AnyCancellable>()
-    private let networkService: NetworkServiceProtocol
     private var currentPage = 1
     private let perPage = 30
     
+    private let networkService: NetworkServiceProtocol
+    private let apiClient: APIClientProtocol
+    
     init(networkService: NetworkServiceProtocol = NetworkService()) {
         self.networkService = networkService
+        self.apiClient = APIClient()
     }
     
-    func refreshFollowers(username: String, followers: Bool, totalCount: Int) {
+    @MainActor
+    func refreshFollowers(username: String, followers: Bool, totalCount: Int) async {
         currentPage = 1
-        fetchFollowers(username: username, followers: followers, isInitialLoad: true, totalCount: totalCount)
+        await retrieveFollowers(username: username, followers: followers, isInitialLoad: true, totalCount: totalCount)
     }
     
     func fetchFollowers(username: String, followers: Bool, isInitialLoad: Bool = true, totalCount: Int) {
@@ -69,5 +73,56 @@ class FollowersViewModel: ObservableObject {
                 }
             })
             .store(in: &cancellables)
+    }
+    
+    @MainActor
+    func retrieveFollowers(username: String, followers: Bool, isInitialLoad: Bool = true, totalCount: Int) async {
+        if !isInitialLoad && self.followers.count >= totalCount {
+            return
+        }
+        
+        if isInitialLoad {
+            isLoading = true
+            currentPage = 1
+        } else {
+            isLoadingMore = true
+        }
+        
+        error = nil
+        
+        do {
+            let fetchedFollowers = try await apiClient.fetchGitHubFollowers(username: username, followers: followers, page: currentPage, perPage: perPage)
+            
+            // Clear loading state based on load type (matches sink receiveCompletion)
+            if isInitialLoad {
+                isLoading = false
+            } else {
+                isLoadingMore = false
+            }
+            
+            // Append or replace (matches receiveValue)
+            if isInitialLoad {
+                self.followers = fetchedFollowers
+            } else {
+                self.followers += fetchedFollowers
+            }
+            
+            // Increment page if more data is available
+            if self.followers.count < totalCount {
+                self.currentPage += 1
+            }
+        } catch {
+            if isInitialLoad {
+                isLoading = false
+            } else {
+                isLoadingMore = false
+            }
+            
+            self.error = NetworkError.map(error)
+            
+            if isInitialLoad {
+                self.followers = []
+            }
+        }
     }
 }

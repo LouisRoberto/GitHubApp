@@ -13,6 +13,9 @@ struct SearchBar: View {
     var body: some View {
         HStack {
             TextField("search.placeholder".localized(), text: $text, onCommit: onCommit)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .submitLabel(.search)
                 .padding(8)
                 .padding(.horizontal, 24)
                 .background(Color(.systemGray5))

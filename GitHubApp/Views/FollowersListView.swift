@@ -51,50 +51,56 @@ struct FollowersListView: View {
                         Color.clear
                             .frame(height: 1)
                             .onAppear {
-                                if !viewModel.isLoadingMore {
-                                    loadMoreData()
+                                Task {
+                                    if !viewModel.isLoadingMore {
+                                        await loadMoreData()
+                                    }
                                 }
                             }
                     }
                     .refreshable {
-                        refreshData()
+                        Task {
+                            await refreshData()
+                        }
                     }
                 }
             }
             .background(Color.appBackground)
             .navigationTitle(isFollowing ? "profile.following".localized() : "profile.followers".localized())
             .onAppear {
-                if viewModel.followers.isEmpty {
-                    loadData()
+                Task {
+                    if viewModel.followers.isEmpty {
+                        await loadData()
+                    }
                 }
             }
         }
     }
     
-    private func loadData() {
+    private func loadData() async {
         if isFollowing {
             // Note: GitHub API has a separate endpoint for following
-            viewModel.fetchFollowers(username: username, followers: false, isInitialLoad: true, totalCount: totalCount)
+            await viewModel.retrieveFollowers(username: username, followers: false, isInitialLoad: true, totalCount: totalCount)
         } else {
-            viewModel.fetchFollowers(username: username, followers: true, isInitialLoad: true, totalCount: totalCount)
+            await viewModel.retrieveFollowers(username: username, followers: true, isInitialLoad: true, totalCount: totalCount)
         }
     }
     
-    private func loadMoreData() {
+    private func loadMoreData() async {
         if isFollowing {
             // Note: GitHub API has a separate endpoint for following
-            viewModel.fetchFollowers(username: username, followers: false, isInitialLoad: false, totalCount: totalCount)
+            await viewModel.retrieveFollowers(username: username, followers: false, isInitialLoad: false, totalCount: totalCount)
         } else {
-            viewModel.fetchFollowers(username: username, followers: true, isInitialLoad: false, totalCount: totalCount)
+            await viewModel.retrieveFollowers(username: username, followers: true, isInitialLoad: false, totalCount: totalCount)
         }
     }
     
-    private func refreshData() {
+    private func refreshData() async {
         if isFollowing {
             // Note: GitHub API has a separate endpoint for following
-            viewModel.fetchFollowers(username: username, followers: false, totalCount: totalCount)
+            await viewModel.retrieveFollowers(username: username, followers: false, totalCount: totalCount)
         } else {
-            viewModel.fetchFollowers(username: username, followers: true, totalCount: totalCount)
+            await viewModel.retrieveFollowers(username: username, followers: true, totalCount: totalCount)
         }
     }
 }

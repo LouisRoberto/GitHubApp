@@ -15,17 +15,23 @@ class SearchViewModel: ObservableObject {
     @Published var searchQuery = ""
     
     private var cancellables = Set<AnyCancellable>()
-    private let networkService: NetworkServiceProtocol
     private var debounceTimer: Timer?
+    
+    private let networkService: NetworkServiceProtocol
+    private let apiClient: APIClientProtocol
     
     init(networkService: NetworkServiceProtocol = NetworkService()) {
         self.networkService = networkService
+        self.apiClient = APIClient()
     }
     
     func searchUsers() {
         debounceTimer?.invalidate()
-        debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
-            self?.performSearch()
+        debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) {_ in 
+            Task { [weak self] in
+                guard let self else { return }
+                await self.excuteSearch()
+            }
         }
     }
     
@@ -47,5 +53,25 @@ class SearchViewModel: ObservableObject {
             self?.searchResults = users.items.filter { $0.login.lowercased().contains(self?.searchQuery.lowercased() ?? "") }
         })
         .store(in: &cancellables)
+    }
+    
+    @MainActor
+    func excuteSearch() async {
+        guard !searchQuery.isEmpty else {
+            searchResults = []
+            return
+        }
+        isLoading = true
+        error = nil
+        
+        do {
+            async let searchTask = apiClient.fetchGitHubUsers(query: searchQuery)
+            let searchResult = try await searchTask
+            isLoading = false
+            self.searchResults = searchResult.items
+        } catch {
+            isLoading = false
+            self.error = NetworkError.map(error)
+        }
     }
 }

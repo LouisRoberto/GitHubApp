@@ -15,9 +15,11 @@ class UserViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     private let networkService: NetworkServiceProtocol
+    private let apiClient: APIClientProtocol
     
     init(networkService: NetworkServiceProtocol = NetworkService()) {
         self.networkService = networkService
+        self.apiClient = APIClient()
     }
     
     func fetchUser(username: String) {
@@ -34,5 +36,20 @@ class UserViewModel: ObservableObject {
             self?.user = user
         })
         .store(in: &cancellables)
+    }
+    
+    @MainActor
+    func retrieveUser(username: String) async{
+        isLoading = true
+        error = nil
+        do {
+            async let userTask = apiClient.fetchGitHubUser(username: username)
+            let userResult = try await userTask
+            isLoading = false
+            self.user = userResult
+        } catch {
+            isLoading = false
+            self.error = NetworkError.map(error)
+        }
     }
 }

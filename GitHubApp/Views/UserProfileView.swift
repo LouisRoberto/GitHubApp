@@ -18,7 +18,7 @@ struct UserProfileView: View {
         ScrollView {
             if viewModel.isLoading {
                 SkeletonView()
-                .frame(minHeight: 400)
+                    .frame(minHeight: 400)
             } else if let error = viewModel.error {
                 ErrorView(error: error)
             } else if let user = viewModel.user {
@@ -29,11 +29,15 @@ struct UserProfileView: View {
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity)
         .refreshable {
-            viewModel.fetchUser(username: username)
+            Task {
+                await viewModel.retrieveUser(username: username)
+            }
         }
         .onAppear {
             if viewModel.user == nil {
-                viewModel.fetchUser(username: username)
+                Task {
+                    await viewModel.retrieveUser(username: username)
+                }
             }
         }
         .sheet(isPresented: $showFollowers) {
