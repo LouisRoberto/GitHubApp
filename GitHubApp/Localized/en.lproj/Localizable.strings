@@ -1,0 +1,32 @@
+/* 
+  Localizable.strings
+  GitHubApp
+
+  Created by Naoufal on 11/5/25.
+  
+*/
+
+/* Common */
+"common.retry" = "Please retry again";
+"common.no_internet" = "Please check your network settings and try again.";
+
+/* Search */
+"search.title" = "GitHub User Search";
+"search.placeholder" = "Search GitHub users...";
+"search.empty_prompt" = "No users found";
+
+/* Profile */
+"profile.followers" = "Followers";
+"profile.following" = "Following";
+"profile.no_bio" = "No bio available";
+
+/* Errors */
+"error.invalid_url" = "Invalid username";
+"error.invalid_response" = "Invalid server response";
+"error.not_found" = "Host not found";
+"error.server_error" = "Server error: %@";
+"error.decoding" = "Error processing data";
+"error.rate_limit" = "API rate limit exceeded";
+"error.no_internet" = "No internet connection";
+"error.unknown" = "Unknown error occurred";
+"error.no_data" = "No data found";

@@ -1,0 +1,32 @@
+/* 
+  Localizable.strings
+  GitHubApp
+
+  Created by Naoufal on 11/5/25.
+  
+*/
+
+/* Common */
+"common.retry" = "Merci de réessayer encore une fois";
+"common.no_internet" = "Veuillez vérifier vos paramètres réseau et réessayer.";
+
+/* Search */
+"search.title" = "Recherche GitHub";
+"search.placeholder" = "Recherchez les utilisateurs GitHub...";
+"search.empty_prompt" = "Aucun utilisateur trouvé";
+
+/* Profile */
+"profile.followers" = "Abonnés";
+"profile.following" = "Abonnements";
+"profile.no_bio" = "Pas de biographie disponible";
+
+/* Errors */
+"error.invalid_url" = "Nom d'utilisateur invalide";
+"error.invalid_response" = "Réponse du serveur invalide";
+"error.not_found" = "Hôte introuvable";
+"error.server_error" = "Erreur serveur : %@";
+"error.decoding" = "Erreur de traitement des données";
+"error.rate_limit" = "Limite d'API atteinte";
+"error.no_internet" = "Pas de connexion Internet";
+"error.unknown" = "Erreur inconnue survenue";
+"error.no_data" = "Donnèes non trouvées";

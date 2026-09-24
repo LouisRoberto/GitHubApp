@@ -1,0 +1,24 @@
+{
+  "originHash" : "c62b7febb4b64ed283843429f4c20bd66c1727021362cdfcb264bd3e48755250",
+  "pins" : [
+    {
+      "identity" : "kingfisher",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/onevcat/Kingfisher.git",
+      "state" : {
+        "revision" : "7deda23bbdca612076c5c315003d8638a08ed0f1",
+        "version" : "8.3.2"
+      }
+    },
+    {
+      "identity" : "wormholy",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pmusolino/Wormholy.git",
+      "state" : {
+        "revision" : "54fdf4d01ccffc8276faf9be32d7d375a0321cab",
+        "version" : "2.1.1"
+      }
+    }
+  ],
+  "version" : 3
+}
